@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
+<title>Dispara la respuesta</title>
+
+<style>
+
+*{
+    box-sizing:border-box;
+}
+
+html,body{
+    margin:0;
+    padding:0;
+    width:100%;
+    min-height:100%;
+    background:#090b12;
+    font-family:Arial,Helvetica,sans-serif;
+    color:white;
+}
+
+body{
+    display:flex;
+    justify-content:center;
+}
+
+.app{
+    width:100%;
+    max-width:700px;
+    min-height:100vh;
+    padding:10px 8px 16px;
+    background:#090b12;
+}
+
+/* BARRA SUPERIOR */
+
+.topbar{
+    height:68px;
+    border:1px solid #2b467b;
+    border-radius:22px;
+    background:rgba(14,27,60,.94);
+
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+
+    padding:10px 12px;
+    margin-bottom:16px;
+
+    box-shadow:0 8px 24px #0008;
+
+    position:relative;
+    z-index:10;
+}
+
+.iconbtn{
+    width:54px;
+    height:54px;
+
+    border-radius:18px;
+
+    border:1px solid #2e4b82;
+
+    background:#101f45;
+
+    color:white;
+
+    font-size:28px;
+    font-weight:bold;
+}
+
+.title{
+    font-size:20px;
+    font-weight:800;
+    text-align:center;
+}
+
+
+/* AREA DEL JUEGO */
+
+.game{
+
+    position:relative;
+
+    overflow:hidden;
+
+    border-radius:28px;
+
+    min-height:calc(100vh - 98px);
+
+    background:#090d2b;
+
+    border:1px solid #10183b;
+
+    box-shadow:0 12px 35px #0009;
+}
+
+
+/* VIDEO DE FONDO */
+
+.bg{
+
+    position:absolute;
+
+    inset:0;
+
+    overflow:hidden;
+
+    background:#090d2b;
+}
+
+.bg video{
+
+    position:absolute;
+
+    width:100%;
+    height:100%;
+
+    object-fit:cover;
+
+    object-position:center bottom;
+
+    display:block;
+
+    transition:opacity .4s ease;
+}
+
+.bg video.back{
+    opacity:0;
+}
+
+
+/* OSCURECE UN POCO EL VIDEO PARA LEER LAS PALABRAS */
+
+.bgShade{
+
+    position:absolute;
+
+    inset:0;
+
+    background:
+    linear-gradient(
+        to bottom,
+        rgba(3,8,28,.28),
+        rgba(4,7,25,.12) 55%,
+        rgba(6,7,25,.30)
+    );
+
+    pointer-events:none;
+}
+
+
+/* INTERFAZ */
+
+.ui{
+
+    position:relative;
+
+    z-index:2;
+
+    min-height:100%;
+
+    padding:22px 14px 18px;
+
+    display:flex;
+
+    flex-direction:column;
+}
+
+
+/* MARCADOR Y TIEMPO */
+
+.status{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-bottom:40px;
+}
+
+.pill{
+
+    background:rgba(8,18,49,.78);
+
+    border:1px solid #2b447a;
+
+    border-radius:22px;
+
+    padding:9px 14px;
+
+    font-size:18px;
+
+    font-weight:800;
+
+    backdrop-filter:blur(6px);
+}
+
+
+/* PALABRA EN ESPAÑOL */
+
+.target{
+
+    align-self:center;
+
+    min-width:200px;
+
+    max-width:88%;
+
+    text-align:center;
+
+    padding:14px 20px;
+
+    border-radius:30px;
+
+    background:rgba(9,19,51,.82);
+
+    border:1px solid #31497a;
+
+    box-shadow:0 0 25px #172f70aa;
+
+    font-size:29px;
+
+    font-weight:800;
+
+    margin-bottom:35px;
+
+    backdrop-filter:blur(6px);
+}
+
+
+/* RESPUESTAS */
+
+.answers{
+
+    display:grid;
+
+    grid-template-columns:1fr 1fr;
+
+    gap:22px 18px;
+
+    align-items:center;
+
+    justify-items:center;
+
+    flex:1;
+}
+
+
+.answer{
+
+    width:130px;
+
+    height:130px;
+
+    border-radius:50%;
+
+    border:1px solid #70a6ff;
+
+    background:
+    linear-gradient(
+        145deg,
+        #478cf5,
+        #1e58c8
+    );
+
+    color:white;
+
+    font-size:19px;
+
+    font-weight:800;
+
+    box-shadow:
+    0 0 24px #1971ff88,
+    inset 0 1px 4px #ffffff55;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    text-align:center;
+
+    padding:12px;
+
+    cursor:pointer;
+
+    transition:
+    transform .12s,
+    filter .12s;
+}
+
+.answer:active{
+
+    transform:scale(.95);
+}
+
+.answer.correct{
+
+    background:#14bd4d;
+}
+
+.answer.wrong{
+
+    background:#d63249;
+}
+
+
+/* CELULAR */
+
+@media(max-width:430px){
+
+    .app{
+
+        padding:10px 8px 16px;
+    }
+
+    .topbar{
+
+        height:68px;
+
+        border-radius:22px;
+    }
+
+    .title{
+
+        font-size:18px;
+    }
+
+    .game{
+
+        border-radius:28px;
+
+        min-height:calc(100vh - 98px);
+    }
+
+    .status{
+
+        margin-bottom:35px;
+    }
+
+    .target{
+
+        font-size:26px;
+
+        margin-bottom:28px;
+    }
+
+    .answer{
+
+        width:126px;
+
+        height:126px;
+
+        font-size:18px;
+    }
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+<div class="app">
+
+
+<header class="topbar">
+
+<button class="iconbtn">
+‹
+</button>
+
+
+<div class="title">
+🚀 Dispara la respuesta
+</div>
+
+
+<button
+class="iconbtn"
+id="pause">
+
+Ⅱ
+
+</button>
+
+</header>
+
+
+
+<main class="game">
+
+
+<!-- VIDEO DE FONDO -->
+
+<div class="bg">
+
+<video
+id="v1"
+autoplay
+muted
+playsinline
+preload="auto"
+src="tank-original.mp4">
+</video>
+
+
+<video
+id="v2"
+class="back"
+muted
+playsinline
+preload="auto"
+src="tank-original.mp4">
+</video>
+
+
+<div class="bgShade"></div>
+
+</div>
+
+
+
+<!-- JUEGO -->
+
+<section class="ui">
+
+
+<div class="status">
+
+<div class="pill">
+
+✅ <span id="score">3</span>
+
+❌ <span id="errors">0</span>
+
+</div>
+
+
+<div class="pill">
+
+⏱ <span id="time">02:29</span>
+
+</div>
+
+</div>
+
+
+
+<div class="target">
+
+<span id="target">
+dinero
+</span>
+
+🔊
+
+</div>
+
+
+
+<div
+class="answers"
+id="answers">
+</div>
+
+
+</section>
+
+
+</main>
+
+</div>
+
+
+
+<script>
+
+
+/* PALABRAS */
+
+const rounds = [
+
+{
+es:"dinero",
+en:"money",
+opts:[
+"money",
+"noodles",
+"mop",
+"ice cream",
+"rice"
+]
+},
+
+{
+es:"casa",
+en:"house",
+opts:[
+"house",
+"school",
+"window",
+"table",
+"car"
+]
+},
+
+{
+es:"ventana",
+en:"window",
+opts:[
+"window",
+"door",
+"chair",
+"money",
+"house"
+]
+},
+
+{
+es:"escuela",
+en:"school",
+opts:[
+"school",
+"table",
+"car",
+"house",
+"rice"
+]
+}
+
+];
+
+
+
+let round = 0;
+
+let score = 3;
+
+let errors = 0;
+
+let paused = false;
+
+
+
+const target =
+document.getElementById("target");
+
+const answers =
+document.getElementById("answers");
+
+
+
+/* CREAR RESPUESTAS */
+
+function render(){
+
+const r =
+rounds[
+round % rounds.length
+];
+
+
+target.textContent =
+r.es;
+
+
+answers.innerHTML = "";
+
+
+r.opts.forEach(word=>{
+
+
+const b =
+document.createElement("button");
+
+
+b.className =
+"answer";
+
+
+b.textContent =
+word;
+
+
+b.onclick = ()=>{
+
+if(paused)
+return;
+
+
+if(word === r.en){
+
+b.classList.add("correct");
+
+
+score++;
+
+
+document.getElementById("score")
+.textContent = score;
+
+
+setTimeout(()=>{
+
+round++;
+
+render();
+
+},220);
+
+
+}else{
+
+b.classList.add("wrong");
+
+
+errors++;
+
+
+document.getElementById("errors")
+.textContent = errors;
+
+
+setTimeout(()=>{
+
+b.classList.remove("wrong");
+
+},300);
+
+}
+
+};
+
+
+answers.appendChild(b);
+
+});
+
+}
+
+
+render();
+
+
+
+/* PAUSA */
+
+const pause =
+document.getElementById("pause");
+
+
+pause.onclick = ()=>{
+
+paused =
+!paused;
+
+
+pause.textContent =
+paused ? "▶" : "Ⅱ";
+
+
+[v1,v2].forEach(v=>{
+
+if(paused){
+
+v.pause();
+
+}else{
+
+v.play();
+
+}
+
+});
+
+};
+
+
+
+/* LOOP SUAVE DEL VIDEO */
+
+const v1 =
+document.getElementById("v1");
+
+const v2 =
+document.getElementById("v2");
+
+
+let fading =
+false;
+
+
+v1.addEventListener(
+"timeupdate",
+()=>{
+
+
+if(
+!v1.duration ||
+fading
+)
+return;
+
+
+if(
+v1.currentTime >
+v1.duration - .38
+){
+
+fading = true;
+
+
+v2.currentTime = 0;
+
+v2.play();
+
+
+v2.classList.remove("back");
+
+
+v1.style.opacity = "0";
+
+
+setTimeout(()=>{
+
+v1.pause();
+
+v1.currentTime = 0;
+
+v1.style.opacity = "1";
+
+
+v2.classList.add("back");
+
+
+fading = false;
+
+},420);
+
+}
+
+});
+
+</script>
+
+
+</body>
+
+</html>
